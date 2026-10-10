@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+
+<html lang="id"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_dashboard" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={darkMode:"class",theme:{extend:{"colors":{"tertiary-container":"#248279","primary":"#00685f","tertiary-fixed":"#9cf2e8","error":"#ba1a1a","primary-fixed":"#89f5e7","primary-container":"#008378","on-background":"#191c1e","tertiary-fixed-dim":"#80d5cb","outline-variant":"#bcc9c6","on-secondary":"#ffffff","surface-tint":"#006a61","surface-container":"#eceef0","surface-bright":"#f7f9fb","secondary-container":"#fea619","surface":"#f7f9fb","surface-container-highest":"#e0e3e5","primary-fixed-dim":"#6bd8cb","surface-variant":"#e0e3e5","inverse-surface":"#2d3133","tertiary":"#006860","on-primary":"#ffffff","on-surface":"#191c1e","surface-container-lowest":"#ffffff","inverse-primary":"#6bd8cb","on-primary-fixed":"#00201d","on-secondary-fixed-variant":"#653e00","secondary-fixed-dim":"#ffb95f","on-primary-fixed-variant":"#005049","on-surface-variant":"#3d4947","on-tertiary-container":"#f3fffc","secondary":"#855300","surface-container-low":"#f2f4f6","on-error-container":"#93000a","outline":"#6d7a77","on-tertiary-fixed":"#00201d","on-error":"#ffffff","on-primary-container":"#f4fffc","inverse-on-surface":"#eff1f3","on-tertiary":"#ffffff","secondary-fixed":"#ffddb8","background":"#f7f9fb","surface-container-high":"#e6e8ea","on-secondary-container":"#684000","on-tertiary-fixed-variant":"#00504a","on-secondary-fixed":"#2a1700","error-container":"#ffdad6","surface-dim":"#d8dadc"},"borderRadius":{"DEFAULT":"0.25rem","lg":"0.5rem","xl":"0.75rem","full":"9999px"},"spacing":{"space-md":"1rem","space-xs":"0.25rem","space-sm":"0.5rem","space-xl":"2.5rem","gutter":"1rem","gutter-md":"1.5rem","margin-md":"2rem","margin":"1rem","space-lg":"1.5rem","margin-lg":"3.5rem","gutter-lg":"2rem"},"fontFamily":{"headline-lg-mobile":["Plus Jakarta Sans"],"label-sm":["Plus Jakarta Sans"],"title-md":["Plus Jakarta Sans"],"body-md":["Plus Jakarta Sans"],"display":["Plus Jakarta Sans"],"headline-lg":["Plus Jakarta Sans"],"headline-sm":["Plus Jakarta Sans"],"body-lg":["Plus Jakarta Sans"],"headline-md":["Plus Jakarta Sans"],"label-md":["Plus Jakarta Sans"]},"fontSize":{"headline-lg-mobile":["26px",{"lineHeight":"34px","letterSpacing":"-0.01em","fontWeight":"700"}],"label-sm":["11px",{"lineHeight":"16px","letterSpacing":"0.03em","fontWeight":"600"}],"title-md":["18px",{"lineHeight":"26px","fontWeight":"600"}],"body-md":["14px",{"lineHeight":"22px","fontWeight":"400"}],"display":["40px",{"lineHeight":"48px","letterSpacing":"-0.02em","fontWeight":"700"}],"headline-lg":["32px",{"lineHeight":"40px","letterSpacing":"-0.015em","fontWeight":"700"}],"headline-sm":["20px",{"lineHeight":"28px","fontWeight":"600"}],"body-lg":["16px",{"lineHeight":"26px","fontWeight":"400"}],"headline-md":["24px",{"lineHeight":"32px","letterSpacing":"-0.01em","fontWeight":"600"}],"label-md":["13px",{"lineHeight":"18px","letterSpacing":"0.01em","fontWeight":"500"}]}}}};</script></head><body class="bg-background font-body-md text-on-surface antialiased selection:bg-primary-fixed selection:text-on-primary-fixed"><aside class="fixed left-0 top-0 h-screen w-72 bg-surface-container-lowest flex flex-col justify-between shadow-[0_1px_8px_rgba(0,0,0,0.04)] z-50"><div class="flex flex-col flex-1 overflow-y-auto px-space-md pt-space-lg"><div class="flex items-center gap-space-sm px-space-sm pb-space-lg"><div class="w-10 h-10 rounded-xl bg-primary flex items-center justify-center text-on-primary shadow-sm"><span class="material-symbols-outlined text-[24px]">spa</span></div><div class="flex flex-col"><span class="font-title-md text-title-md text-primary leading-tight">RuangCerita</span><span class="font-label-sm text-label-sm text-on-surface-variant">Madrasah &amp; Pesantren</span></div></div><div class="px-space-sm pb-space-sm"><span class="font-label-sm text-label-sm uppercase tracking-wider text-outline">Menu Santri</span></div><nav class="flex flex-col gap-space-xs" data-active-classes="bg-primary-container text-on-primary-container font-headline-sm"><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl font-label-md text-label-md text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="dashboard-utama" href="#"><span class="material-symbols-outlined text-[20px]">grid_view</span><span>Dashboard Utama</span></a><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl font-label-md text-label-md text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="daily-check-in-refleksi" href="#"><span class="material-symbols-outlined text-[20px]">self_improvement</span><span>Daily Check-in &amp; Refleksi</span></a><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl font-label-md text-label-md text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="ai-tutor-adaptif" href="#"><span class="material-symbols-outlined text-[20px]">psychology</span><span>AI Tutor Adaptif (Tutor Cerdas)</span></a><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl font-label-md text-label-md text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="flashcard-quiz-kilat" href="#"><span class="material-symbols-outlined text-[20px]">style</span><span>Flashcard &amp; Quiz Kilat</span></a><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl font-label-md text-label-md text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="study-planner" href="#"><span class="material-symbols-outlined text-[20px]">calendar_today</span><span>Study Planner</span></a><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl font-label-md text-label-md text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="learning-journey" href="#"><span class="material-symbols-outlined text-[20px]">explore</span><span>Learning Journey</span></a><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl font-label-md text-label-md text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="hubungi-pendamping-bk" href="#"><span class="material-symbols-outlined text-[20px]">support_agent</span><span>Hubungi Pendamping (BK)</span></a></nav></div><div class="p-space-md"><div class="bg-surface-container-low rounded-2xl p-space-sm flex items-center gap-space-sm"><div class="w-10 h-10 rounded-full bg-primary flex items-center justify-center shrink-0"><span class="material-symbols-outlined text-on-primary text-[20px]">person</span></div><div class="flex flex-col min-w-0 flex-1"><span class="font-label-md text-label-md text-on-surface truncate">Ahmad Fauzi</span><span class="font-label-sm text-label-sm text-on-surface-variant truncate">Kls 11 IPA 2 • Santri Asrama</span></div><button class="p-space-xs text-on-surface-variant hover:text-on-surface rounded-lg transition-colors" type="button"><span class="material-symbols-outlined text-[20px]">more_vert</span></button></div></div></aside><div class="pl-72 flex flex-col min-h-screen"><header class="fixed top-0 left-72 right-0 h-16 bg-surface/80 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)] z-40 flex items-center justify-between px-space-lg"><div class="flex items-center gap-space-sm"><span class="font-label-md text-label-md text-outline">RuangCerita</span><span class="material-symbols-outlined text-[16px] text-outline">chevron_right</span><span class="font-label-md text-label-md text-on-surface">Santri Portal</span></div><div class="flex items-center gap-space-md"><div class="hidden md:flex items-center gap-space-xs bg-surface-container-low px-space-md py-space-xs rounded-full"><span class="material-symbols-outlined text-primary text-[18px]">event</span><span class="font-label-sm text-label-sm text-on-surface-variant">14 Sya'ban 1446 H • 14 Feb 2025</span></div><div class="hidden lg:flex items-center gap-space-xs bg-secondary-fixed/50 px-space-sm py-space-xs rounded-full"><span class="material-symbols-outlined text-secondary text-[16px]">school</span><span class="font-label-sm text-label-sm text-secondary font-medium">Semester Genap</span></div><button aria-label="Notifikasi" class="relative p-space-xs rounded-full text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors" type="button"><span class="material-symbols-outlined text-[22px]">notifications</span><span class="absolute top-1 right-1 w-2 h-2 rounded-full bg-error"></span></button><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></header><main class="w-full pt-16 bg-background flex-1 px-space-lg py-space-md"><div class="flex flex-col w-full gap-space-lg pb-space-xl">
+<!-- Sub-header Area -->
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-space-md bg-surface-container-lowest p-space-lg rounded-2xl shadow-sm relative overflow-hidden">
+<div class="absolute -right-16 -top-16 w-56 h-56 bg-primary-fixed/20 rounded-full blur-3xl pointer-events-none"></div>
+<div class="flex flex-col gap-space-xs max-w-2xl relative z-10">
+<div class="inline-flex items-center gap-space-xs text-primary font-label-sm uppercase tracking-wider">
+<span class="material-symbols-outlined text-[16px]">verified_user</span>
+<span>Ruang Teduh • Terenkripsi End-to-End</span>
+</div>
+<h1 class="font-headline-lg text-headline-lg text-on-surface tracking-tight">Daily Check-in &amp; Refleksi Terpadu</h1>
+<p class="font-body-md text-body-md text-on-surface-variant leading-relaxed">
+        Ruang hening 1 menit untuk memahami kondisi hati, pikiran, dan ritme belajarmu hari ini. Privasi santri terjaga 100% dengan prinsip amanah dan sakinah.
+      </p>
+</div>
+<div class="flex flex-col sm:flex-row items-start sm:items-center gap-space-sm relative z-10 shrink-0">
+<div class="flex items-center gap-space-xs bg-surface-container px-space-md py-space-sm rounded-xl text-on-surface-variant">
+<span class="material-symbols-outlined text-outline text-[18px]">calendar_month</span>
+<span class="font-label-md text-label-md">Rabu, 23 Okt 2024 • 19 Rabiul Akhir 1446 H</span>
+</div>
+<div class="flex items-center gap-space-xs bg-secondary-container/20 text-on-secondary-container px-space-md py-space-sm rounded-xl" id="statusBadge">
+<span class="w-2 h-2 rounded-full bg-secondary-container animate-pulse"></span>
+<span class="font-label-md text-label-md font-semibold">Check-in: Belum Terkirim</span>
+</div>
+</div>
+</div>
+<!-- Main Section: 2 Kolom (65% & 35%) -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-space-lg items-start">
+<!-- Kolom Kiri: Formulir Interaktif Refleksi (65%) -->
+<div class="lg:col-span-8 flex flex-col gap-space-lg">
+<form class="bg-surface-container-lowest p-space-lg md:p-space-xl rounded-2xl shadow-sm flex flex-col gap-space-xl relative" id="reflectionForm">
+<!-- Step 1: Mood Selector -->
+<div class="flex flex-col gap-space-md">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-sm">
+<span class="w-7 h-7 rounded-full bg-primary/10 text-primary font-label-md flex items-center justify-center font-bold">1</span>
+<h2 class="font-title-md text-title-md text-on-surface">Bagaimana kondisi hati &amp; suasana batinmu saat ini?</h2>
+</div>
+<span class="font-label-sm text-label-sm text-outline">Pilih 1 Suasana</span>
+</div>
+<div class="grid grid-cols-2 sm:grid-cols-5 gap-space-sm" id="moodGroup">
+<!-- Mood 1 -->
+<button class="mood-btn flex flex-col items-center justify-center p-space-md rounded-2xl bg-surface-container-low hover:bg-surface-container transition-all group cursor-pointer text-center gap-space-xs" data-mood="tertekan" type="button">
+<span class="text-3xl filter grayscale group-hover:grayscale-0 group-hover:scale-110 transition-transform">😣</span>
+<span class="font-label-md text-label-md text-on-surface-variant font-medium mt-1">Sangat Tertekan</span>
+</button>
+<!-- Mood 2 -->
+<button class="mood-btn flex flex-col items-center justify-center p-space-md rounded-2xl bg-surface-container-low hover:bg-surface-container transition-all group cursor-pointer text-center gap-space-xs" data-mood="lelah" type="button">
+<span class="text-3xl filter grayscale group-hover:grayscale-0 group-hover:scale-110 transition-transform">😕</span>
+<span class="font-label-md text-label-md text-on-surface-variant font-medium mt-1">Lelah / Kurang Baik</span>
+</button>
+<!-- Mood 3 -->
+<button class="mood-btn flex flex-col items-center justify-center p-space-md rounded-2xl bg-surface-container-low hover:bg-surface-container transition-all group cursor-pointer text-center gap-space-xs" data-mood="biasa" type="button">
+<span class="text-3xl filter grayscale group-hover:grayscale-0 group-hover:scale-110 transition-transform">😐</span>
+<span class="font-label-md text-label-md text-on-surface-variant font-medium mt-1">Biasa Saja</span>
+</button>
+<!-- Mood 4 (Active default demo) -->
+<button class="mood-btn active-mood flex flex-col items-center justify-center p-space-md rounded-2xl bg-primary text-on-primary shadow-sm transition-all group cursor-pointer text-center gap-space-xs" data-mood="tenang" type="button">
+<span class="text-3xl scale-110">🙂</span>
+<span class="font-label-md text-label-md font-semibold mt-1">Baik &amp; Tenang</span>
+</button>
+<!-- Mood 5 -->
+<button class="mood-btn flex flex-col items-center justify-center p-space-md rounded-2xl bg-surface-container-low hover:bg-surface-container transition-all group cursor-pointer text-center gap-space-xs" data-mood="semangat" type="button">
+<span class="text-3xl filter grayscale group-hover:grayscale-0 group-hover:scale-110 transition-transform">😁</span>
+<span class="font-label-md text-label-md text-on-surface-variant font-medium mt-1">Sangat Bersemangat</span>
+</button>
+</div>
+</div>
+<!-- Step 2: Slider Gauges -->
+<div class="flex flex-col gap-space-md">
+<div class="flex items-center gap-space-sm">
+<span class="w-7 h-7 rounded-full bg-primary/10 text-primary font-label-md flex items-center justify-center font-bold">2</span>
+<h2 class="font-title-md text-title-md text-on-surface">Pengukuran Ritme Energi &amp; Beban Hari Ini</h2>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-space-md">
+<!-- Gauge 1: Fokus Belajar -->
+<div class="bg-surface-container-low p-space-md rounded-xl flex flex-col gap-space-sm">
+<div class="flex items-center justify-between">
+<span class="font-label-md text-label-md text-on-surface font-semibold flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-[18px] text-primary">target</span> Fokus Belajar
+                </span>
+<span class="font-label-sm text-label-sm text-primary font-bold" id="valFocus">65%</span>
+</div>
+<input class="w-full accent-primary cursor-pointer h-2 bg-surface-container rounded-lg" id="sliderFocus" max="100" min="0" type="range" value="65"/>
+<span class="font-label-sm text-label-sm text-on-surface-variant" id="descFocus">Cukup Fokus • Siap Muroja'ah</span>
+</div>
+<!-- Gauge 2: Energi Fisik & Pikiran -->
+<div class="bg-surface-container-low p-space-md rounded-xl flex flex-col gap-space-sm">
+<div class="flex items-center justify-between">
+<span class="font-label-md text-label-md text-on-surface font-semibold flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-[18px] text-secondary">bolt</span> Energi Fisik &amp; Pikiran
+                </span>
+<span class="font-label-sm text-label-sm text-secondary font-bold" id="valEnergy">40%</span>
+</div>
+<input class="w-full accent-secondary-container cursor-pointer h-2 bg-surface-container rounded-lg" id="sliderEnergy" max="100" min="0" type="range" value="40"/>
+<span class="font-label-sm text-label-sm text-on-surface-variant" id="descEnergy">Kelelahan Ringan • Butuh Nap 15m</span>
+</div>
+<!-- Gauge 3: Tekanan Tugas -->
+<div class="bg-surface-container-low p-space-md rounded-xl flex flex-col gap-space-sm">
+<div class="flex items-center justify-between">
+<span class="font-label-md text-label-md text-on-surface font-semibold flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-[18px] text-error">assignment_late</span> Tekanan Beban &amp; Hafalan
+                </span>
+<span class="font-label-sm text-label-sm text-error font-bold" id="valLoad">80%</span>
+</div>
+<input class="w-full accent-error cursor-pointer h-2 bg-surface-container rounded-lg" id="sliderLoad" max="100" min="0" type="range" value="80"/>
+<span class="font-label-sm text-label-sm text-error" id="descLoad">Padat &amp; Menumpuk</span>
+</div>
+</div>
+</div>
+<!-- Step 3: Multi-Select Chips (Faktor Utama) -->
+<div class="flex flex-col gap-space-md">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-sm">
+<span class="w-7 h-7 rounded-full bg-primary/10 text-primary font-label-md flex items-center justify-center font-bold">3</span>
+<h2 class="font-title-md text-title-md text-on-surface">Apa faktor utama yang mempengaruhimu hari ini?</h2>
+</div>
+<span class="font-label-sm text-label-sm text-outline">Bisa pilih lebih dari 1</span>
+</div>
+<div class="flex flex-wrap gap-space-sm" id="chipContainer">
+<button class="chip-item active-chip px-space-md py-space-sm rounded-full bg-primary text-on-primary font-label-md text-label-md flex items-center gap-space-xs transition-colors" type="button">
+<span class="material-symbols-outlined text-[16px]">menu_book</span> Target Hafalan Al-Qur'an
+            </button>
+<button class="chip-item px-space-md py-space-sm rounded-full bg-surface-container-low text-on-surface-variant font-label-md text-label-md flex items-center gap-space-xs hover:bg-surface-container transition-colors" type="button">
+<span class="material-symbols-outlined text-[16px]">auto_stories</span> Ujian Fiqih
+            </button>
+<button class="chip-item active-chip px-space-md py-space-sm rounded-full bg-primary text-on-primary font-label-md text-label-md flex items-center gap-space-xs transition-colors" type="button">
+<span class="material-symbols-outlined text-[16px]">science</span> Tugas Praktikum Fisika
+            </button>
+<button class="chip-item px-space-md py-space-sm rounded-full bg-surface-container-low text-on-surface-variant font-label-md text-label-md flex items-center gap-space-xs hover:bg-surface-container transition-colors" type="button">
+<span class="material-symbols-outlined text-[16px]">bedtime</span> Kurang Tidur / Qiyamul Lail
+            </button>
+<button class="chip-item px-space-md py-space-sm rounded-full bg-surface-container-low text-on-surface-variant font-label-md text-label-md flex items-center gap-space-xs hover:bg-surface-container transition-colors" type="button">
+<span class="material-symbols-outlined text-[16px]">group</span> Dinamika Teman Sekamar Asrama
+            </button>
+<button class="chip-item px-space-md py-space-sm rounded-full bg-surface-container-low text-on-surface-variant font-label-md text-label-md flex items-center gap-space-xs hover:bg-surface-container transition-colors" type="button">
+<span class="material-symbols-outlined text-[16px]">cottage</span> Rindu Keluarga (Homesick)
+            </button>
+</div>
+</div>
+<!-- Step 4: Encrypted Private Journal & Toggle BK -->
+<div class="flex flex-col gap-space-md">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-sm">
+<span class="w-7 h-7 rounded-full bg-primary/10 text-primary font-label-md flex items-center justify-center font-bold">4</span>
+<h2 class="font-title-md text-title-md text-on-surface">Jurnal Cerita Singkat / Refleksi Pribadi</h2>
+</div>
+<div class="flex items-center gap-space-xs text-primary font-label-sm">
+<span class="material-symbols-outlined text-[16px]">lock</span>
+<span>Enkripsi 256-bit</span>
+</div>
+</div>
+<div class="relative w-full">
+<textarea class="w-full p-space-md rounded-2xl bg-surface-container-lowest border-0 ring-1 ring-outline-variant focus:ring-2 focus:ring-primary text-on-surface placeholder:text-outline font-body-md text-body-md transition-all resize-none" id="journalInput" placeholder="Tuliskan apa saja yang mengganjal di pikiranmu... Catatan ini bersifat privat dan hanya dianalisis AI untuk memberi rekomendasi belajar terbaik." rows="4"></textarea>
+<div class="absolute right-3 bottom-3 text-outline text-label-sm font-label-sm">
+<span id="charCount">0</span>/500 kata
+            </div>
+</div>
+<!-- Privacy Toggle Switch -->
+<div class="flex items-center justify-between p-space-md rounded-xl bg-surface-container-low">
+<div class="flex items-center gap-space-sm pr-space-md">
+<div class="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center text-primary shrink-0">
+<span class="material-symbols-outlined text-[20px]">shield_person</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-on-surface font-semibold">Izinkan ringkasan anonim ke Guru BK jika butuh pendampingan</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Hanya mendeteksi indikasi beban berat, isi detail cerita tetap rahasia.</span>
+</div>
+</div>
+<label class="relative inline-flex items-center cursor-pointer shrink-0">
+<input checked="" class="sr-only peer" id="bkConsentToggle" type="checkbox"/>
+<div class="w-11 h-6 bg-surface-container-highest peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-on-primary after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-surface-container-lowest after:border-surface-container after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+</label>
+</div>
+</div>
+<!-- Action Buttons -->
+<div class="flex flex-col sm:flex-row items-center justify-end gap-space-sm pt-space-sm border-t border-surface-container">
+<button class="w-full sm:w-auto px-space-lg py-space-sm rounded-xl font-label-md text-label-md text-on-surface-variant hover:bg-surface-container-high transition-colors" id="resetBtn" type="button">
+            Reset Isian
+          </button>
+<button class="w-full sm:w-auto px-space-xl py-space-sm rounded-xl bg-primary hover:bg-primary-container text-on-primary font-label-md text-label-md font-semibold shadow-sm transition-all flex items-center justify-center gap-space-xs" id="submitBtn" type="submit">
+<span class="material-symbols-outlined text-[18px]">auto_awesome</span>
+<span>Kirim &amp; Hasilkan Rekomendasi Pintar ✨</span>
+</button>
+</div>
+</form>
+</div>
+<!-- Kolom Kanan: Riwayat, AI Insight & Bantuan BK (35%) -->
+<div class="lg:col-span-4 flex flex-col gap-space-lg">
+<!-- Card: Riwayat Check-in 7 Hari Terakhir -->
+<div class="bg-surface-container-lowest p-space-lg rounded-2xl shadow-sm flex flex-col gap-space-md">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-primary text-[20px]">history_toggle_off</span>
+<h3 class="font-title-md text-title-md text-on-surface">Riwayat 7 Hari</h3>
+</div>
+<span class="font-label-sm text-label-sm text-primary font-semibold">Konsistensi 85%</span>
+</div>
+<!-- Weekly Matrix -->
+<div class="grid grid-cols-7 gap-1 bg-surface-container-low p-space-sm rounded-xl text-center">
+<div class="flex flex-col items-center gap-1">
+<span class="font-label-sm text-label-sm text-outline">Sen</span>
+<div class="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-on-surface font-label-sm" title="Senin: Tenang">🙂</div>
+</div>
+<div class="flex flex-col items-center gap-1">
+<span class="font-label-sm text-label-sm text-outline">Sel</span>
+<div class="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-on-surface font-label-sm" title="Selasa: Bersemangat">😁</div>
+</div>
+<div class="flex flex-col items-center gap-1">
+<span class="font-label-sm text-label-sm text-primary font-bold">Rab</span>
+<div class="w-8 h-8 rounded-full ring-2 ring-primary ring-offset-2 bg-primary text-on-primary flex items-center justify-center font-label-sm">⏳</div>
+</div>
+<div class="flex flex-col items-center gap-1">
+<span class="font-label-sm text-label-sm text-outline">Kam</span>
+<div class="w-8 h-8 rounded-full bg-surface-container flex items-center justify-center text-outline font-label-sm">?</div>
+</div>
+<div class="flex flex-col items-center gap-1">
+<span class="font-label-sm text-label-sm text-outline">Jum</span>
+<div class="w-8 h-8 rounded-full bg-surface-container flex items-center justify-center text-outline font-label-sm">?</div>
+</div>
+<div class="flex flex-col items-center gap-1">
+<span class="font-label-sm text-label-sm text-outline">Sab</span>
+<div class="w-8 h-8 rounded-full bg-surface-container flex items-center justify-center text-outline font-label-sm">?</div>
+</div>
+<div class="flex flex-col items-center gap-1">
+<span class="font-label-sm text-label-sm text-outline">Ahd</span>
+<div class="w-8 h-8 rounded-full bg-surface-container flex items-center justify-center text-outline font-label-sm">?</div>
+</div>
+</div>
+<!-- Weekly AI Trend Insight -->
+<div class="p-space-md rounded-xl bg-surface-container-low flex flex-col gap-space-xs">
+<div class="flex items-center gap-space-xs text-primary">
+<span class="material-symbols-outlined text-[18px]">insights</span>
+<span class="font-label-md text-label-md font-bold">Pola AI Terdeteksi</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant leading-relaxed">
+            Tingkat lelah teramati meningkat setiap malam Rabu karena benturan jadwal setoran hafalan Juz 28 dan tugas eksakta. AI menyarankan teknik jeda 15 menit setelah Asar.
+          </p>
+</div>
+</div>
+<!-- Card: Follow-up H+1 & Respon Cepat -->
+<div class="bg-surface-container-lowest p-space-lg rounded-2xl shadow-sm flex flex-col gap-space-sm border-l-4 border-primary">
+<div class="flex items-center gap-space-xs text-primary">
+<span class="material-symbols-outlined text-[20px]">thumb_up</span>
+<span class="font-title-md text-title-md text-on-surface">Follow-up Refleksi Kemarin</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant">
+<span class="font-semibold text-primary">Alhamdulillah!</span> Kemarin kamu menuntaskan 15 menit muraja'ah Fiqih tepat waktu meski merasa sedikit letih. Usahamu tercatat bernilai ibadah.
+        </p>
+<div class="flex items-center justify-between pt-space-xs text-outline font-label-sm text-label-sm">
+<span>Tercapai kemarin: 16:30 WIB</span>
+<span class="text-primary font-semibold">+25 Poin Istiqomah</span>
+</div>
+</div>
+<!-- Card: Ruang Curhat Aman Santri (Bantuan Manusia) -->
+<div class="bg-surface-container-lowest p-space-lg rounded-2xl shadow-sm flex flex-col gap-space-md">
+<div class="flex items-start gap-space-md">
+<div class="w-12 h-12 rounded-2xl bg-secondary-fixed/50 flex items-center justify-center text-secondary shrink-0">
+<span class="material-symbols-outlined text-[26px]">favorite</span>
+</div>
+<div class="flex flex-col">
+<h3 class="font-title-md text-title-md text-on-surface">Ruang Curhat Aman</h3>
+<span class="font-label-sm text-label-sm text-outline">Pendampingan Santri &amp; Asrama</span>
+</div>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant leading-relaxed">
+          Merasa beban terlalu berat atau butuh teman bicara? Jadwalkan obrolan santai tanpa rasa takut bersama Ustadz Pembimbing atau Guru BK. Kerahasiaan dijamin penuh.
+        </p>
+<button class="w-full py-space-sm px-space-md rounded-xl bg-secondary-container text-on-secondary-container hover:bg-secondary-fixed-dim font-label-md text-label-md font-semibold transition-all flex items-center justify-center gap-space-xs shadow-sm" id="openBkModalBtn" type="button">
+<span class="material-symbols-outlined text-[18px]">chat</span>
+<span>Kirim Pesan Rahasia ke BK</span>
+</button>
+</div>
+<!-- Kutipan Hikmah / Penyejuk Batin -->
+<div class="p-space-md rounded-2xl bg-gradient-to-br from-primary to-primary-container text-on-primary flex flex-col gap-space-xs shadow-sm">
+<div class="flex items-center gap-space-xs text-primary-fixed">
+<span class="material-symbols-outlined text-[18px]">spa</span>
+<span class="font-label-sm text-label-sm uppercase tracking-wider font-semibold">Tafakkur Sore</span>
+</div>
+<p class="font-body-md text-body-md italic leading-relaxed text-on-primary-container">
+          "Hati yang tenang lahir dari kesediaan menerima apa yang belum selesai dan memasrahkannya kepada Sang Pemilik Jiwa."
+        </p>
+<span class="font-label-sm text-label-sm text-primary-fixed text-right">• Nasihat Pagi Asrama</span>
+</div>
+</div>
+</div>
+<!-- Modal Konfirmasi / BK Dialog (Hidden by Default) -->
+<div class="fixed inset-0 bg-inverse-surface/40 backdrop-blur-sm z-50 hidden flex items-center justify-center p-space-md" id="bkModal">
+<div class="bg-surface-container-lowest max-w-md w-full rounded-3xl p-space-xl shadow-xl flex flex-col gap-space-md animate-in fade-in zoom-in-95 duration-200">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-sm">
+<div class="w-10 h-10 rounded-full bg-secondary-fixed/50 flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined text-[20px]">support_agent</span>
+</div>
+<h4 class="font-title-md text-title-md text-on-surface">Pesan Rahasia Guru BK</h4>
+</div>
+<button class="text-outline hover:text-on-surface p-1" id="closeBkModalBtn" type="button">
+<span class="material-symbols-outlined text-[20px]">close</span>
+</button>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant">
+        Pesan ini langsung masuk ke surel tertutup Ustadzah Nurul (Konselor Santri). Santri lain tidak dapat melihat pesan ini.
+      </p>
+<textarea class="w-full p-space-md rounded-xl bg-surface-container border-0 ring-1 ring-outline-variant focus:ring-2 focus:ring-primary text-on-surface font-body-md text-body-md resize-none" placeholder="Tulis hal yang ingin kamu diskusikan secara privat..." rows="3"></textarea>
+<div class="flex items-center justify-end gap-space-sm">
+<button class="px-space-md py-space-sm rounded-xl font-label-md text-label-md text-on-surface-variant hover:bg-surface-container" id="cancelBkBtn" type="button">Batal</button>
+<button class="px-space-lg py-space-sm rounded-xl bg-primary text-on-primary font-label-md text-label-md font-semibold" id="sendBkBtn" type="button">Kirimkan Sekarang</button>
+</div>
+</div>
+</div>
+<!-- Toast Notifikasi Sukses -->
+<div class="fixed bottom-6 right-6 bg-primary text-on-primary px-space-lg py-space-md rounded-2xl shadow-xl z-50 hidden flex items-center gap-space-sm" id="toastSuccess">
+<span class="material-symbols-outlined text-[22px]">check_circle</span>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md font-bold">Alhamdulillah, Refleksi Tersimpan!</span>
+<span class="font-label-sm text-label-sm text-primary-fixed">AI sedang menyusun rekomendasi istirahat dan materi santai.</span>
+</div>
+</div>
+</div>
+<script>
+  // Dynamic Character Counter
+  const journalInput = document.getElementById('journalInput');
+  const charCount = document.getElementById('charCount');
+  if (journalInput && charCount) {
+    journalInput.addEventListener('input', () => {
+      const words = journalInput.value.trim() ? journalInput.value.trim().split(/\s+/).length : 0;
+      charCount.textContent = words;
+    });
+  }
+
+  // Interactive Mood Selector
+  const moodButtons = document.querySelectorAll('.mood-btn');
+  moodButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      moodButtons.forEach(b => {
+        b.classList.remove('active-mood', 'bg-primary', 'text-on-primary', 'shadow-sm');
+        b.classList.add('bg-surface-container-low');
+        const spanText = b.querySelector('span:last-child');
+        if (spanText) {
+          spanText.classList.remove('font-semibold');
+          spanText.classList.add('text-on-surface-variant');
+        }
+        const emoji = b.querySelector('span:first-child');
+        if (emoji) {
+          emoji.classList.add('filter', 'grayscale');
+          emoji.classList.remove('scale-110');
+        }
+      });
+
+      btn.classList.add('active-mood', 'bg-primary', 'text-on-primary', 'shadow-sm');
+      btn.classList.remove('bg-surface-container-low');
+      const activeText = btn.querySelector('span:last-child');
+      if (activeText) {
+        activeText.classList.remove('text-on-surface-variant');
+        activeText.classList.add('font-semibold');
+      }
+      const activeEmoji = btn.querySelector('span:first-child');
+      if (activeEmoji) {
+        activeEmoji.classList.remove('filter', 'grayscale');
+        activeEmoji.classList.add('scale-110');
+      }
+    });
+  });
+
+  // Dynamic Slider Gauges
+  const sliderFocus = document.getElementById('sliderFocus');
+  const valFocus = document.getElementById('valFocus');
+  const descFocus = document.getElementById('descFocus');
+  if (sliderFocus) {
+    sliderFocus.addEventListener('input', (e) => {
+      const val = e.target.value;
+      valFocus.textContent = val + '%';
+      if (val > 75) descFocus.textContent = 'Sangat Siap & Konsentrasi Penuh';
+      else if (val > 40) descFocus.textContent = 'Cukup Fokus & Siap Muroja\'ah';
+      else descFocus.textContent = 'Pikiran Terpecah & Butuh Wudhu/Jeda';
+    });
+  }
+
+  const sliderEnergy = document.getElementById('sliderEnergy');
+  const valEnergy = document.getElementById('valEnergy');
+  const descEnergy = document.getElementById('descEnergy');
+  if (sliderEnergy) {
+    sliderEnergy.addEventListener('input', (e) => {
+      const val = e.target.value;
+      valEnergy.textContent = val + '%';
+      if (val > 70) descEnergy.textContent = 'Bugar & Siap Beraktivitas';
+      else if (val > 35) descEnergy.textContent = 'Kelelahan Ringan & Butuh Nap 15m';
+      else descEnergy.textContent = 'Sangat Letih, Prioritaskan Istirahat';
+    });
+  }
+
+  const sliderLoad = document.getElementById('sliderLoad');
+  const valLoad = document.getElementById('valLoad');
+  const descLoad = document.getElementById('descLoad');
+  if (sliderLoad) {
+    sliderLoad.addEventListener('input', (e) => {
+      const val = e.target.value;
+      valLoad.textContent = val + '%';
+      if (val > 75) descLoad.textContent = 'Padat & Menumpuk';
+      else if (val > 40) descLoad.textContent = 'Beban Belajar Proporsional';
+      else descLoad.textContent = 'Santai & Ringan';
+    });
+  }
+
+  // Interactive Chip Selection
+  const chips = document.querySelectorAll('.chip-item');
+  chips.forEach(chip => {
+    chip.addEventListener('click', () => {
+      const isActive = chip.classList.contains('bg-primary');
+      if (isActive) {
+        chip.classList.remove('bg-primary', 'text-on-primary');
+        chip.classList.add('bg-surface-container-low', 'text-on-surface-variant');
+      } else {
+        chip.classList.add('bg-primary', 'text-on-primary');
+        chip.classList.remove('bg-surface-container-low', 'text-on-surface-variant');
+      }
+    });
+  });
+
+  // Modal BK logic
+  const bkModal = document.getElementById('bkModal');
+  const openBkModalBtn = document.getElementById('openBkModalBtn');
+  const closeBkModalBtn = document.getElementById('closeBkModalBtn');
+  const cancelBkBtn = document.getElementById('cancelBkBtn');
+  const sendBkBtn = document.getElementById('sendBkBtn');
+
+  function openBkModal() {
+    if (bkModal) bkModal.classList.remove('hidden');
+  }
+  function closeBkModal() {
+    if (bkModal) bkModal.classList.add('hidden');
+  }
+
+  if (openBkModalBtn) openBkModalBtn.addEventListener('click', openBkModal);
+  if (closeBkModalBtn) closeBkModalBtn.addEventListener('click', closeBkModal);
+  if (cancelBkBtn) cancelBkBtn.addEventListener('click', closeBkModal);
+  if (sendBkBtn) {
+    sendBkBtn.addEventListener('click', () => {
+      closeBkModal();
+      showToast('Pesan terenkripsi berhasil terkirim ke Konselor BK.');
+    });
+  }
+
+  // Submission handler
+  const form = document.getElementById('reflectionForm');
+  const toastSuccess = document.getElementById('toastSuccess');
+  const statusBadge = document.getElementById('statusBadge');
+
+  function showToast(msg) {
+    if (toastSuccess) {
+      if (msg) toastSuccess.querySelector('span.font-label-md').textContent = msg;
+      toastSuccess.classList.remove('hidden');
+      setTimeout(() => {
+        toastSuccess.classList.add('hidden');
+      }, 4000);
+    }
+  }
+
+  if (form) {
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      if (statusBadge) {
+        statusBadge.innerHTML = '<span class="w-2 h-2 rounded-full bg-primary"></span><span class="font-label-md text-label-md font-semibold text-primary">Sudah Check-in Hari Ini ✓</span>';
+        statusBadge.className = 'flex items-center gap-space-xs bg-primary/10 text-primary px-space-md py-space-sm rounded-xl';
+      }
+      showToast('Alhamdulillah, Refleksi Tersimpan!');
+    });
+  }
+
+  const resetBtn = document.getElementById('resetBtn');
+  if (resetBtn) {
+    resetBtn.addEventListener('click', () => {
+      if (journalInput) journalInput.value = '';
+      if (charCount) charCount.textContent = '0';
+    });
+  }
+</script></main></div></body></html>
