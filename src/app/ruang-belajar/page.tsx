@@ -1,58 +1,68 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   BookOpenText,
   Check,
-  Clock3,
+  ClipboardList,
+  ExternalLink,
+  FileText,
   GraduationCap,
   Lightbulb,
-  ListVideo,
-  NotebookText,
   Play,
   Sparkles,
+  Upload,
 } from "lucide-react";
 import {
   ConversationPanel,
   type ConversationMessage,
 } from "@/components/conversation-panel";
 
-const lessons = [
+const materials = [
   {
-    id: "aircAruvnKk",
-    title: "But what is a neural network?",
-    creator: "3Blue1Brown",
-    duration: "18 menit belajar",
-    topic: "Matematika & AI",
-    summary: [
-      "Jaringan saraf tiruan tersusun dari lapisan yang mengolah masukan menjadi keluaran.",
-      "Setiap hubungan memiliki bobot yang disesuaikan saat model belajar dari contoh.",
-      "Visualisasi membantu melihat bagaimana banyak operasi sederhana membentuk prediksi.",
-    ],
+    id: "video-aksi-sungai",
+    title: "Video Aksi Lingkungan & Peduli Sungai",
+    type: "video",
+    url: "https://www.youtube.com/embed/WA_hVuaA-SE",
   },
   {
-    id: "8mAITcNt710",
-    title: "Harvard CS50 - Full Computer Science Course",
-    creator: "freeCodeCamp.org",
-    duration: "25 menit belajar",
-    topic: "Logika komputasi",
-    summary: [
-      "Program adalah rangkaian instruksi yang disusun untuk menyelesaikan suatu masalah.",
-      "Blok Scratch membantu menyusun urutan, percabangan, dan pengulangan secara visual.",
-      "Mulailah dari tujuan kecil, pecah menjadi langkah, lalu uji hasilnya.",
-    ],
+    id: "analisis-struktur-berita",
+    title: "Analisis Struktur Berita",
+    type: "pdf",
+    url: "https://drive.google.com/file/d/1s08ZVPuX4Fw-ml5dc6U_glySVzeiNdrj/preview",
   },
   {
-    id: "kqtD5dpn9C8",
-    title: "Python for Beginners - Learn Coding with Python in 1 Hour",
-    creator: "Programming with Mosh",
-    duration: "20 menit belajar",
-    topic: "Pemrograman dasar",
-    summary: [
-      "Python menjalankan instruksi yang ditulis dengan sintaks yang mudah dibaca.",
-      "Variabel menyimpan nilai yang dapat dipakai dan diolah di bagian program lain.",
-      "Latihan singkat dan mencoba contoh sendiri membantu menguatkan konsep dasar.",
-    ],
+    id: "bahasa-indonesia-lanjut",
+    title: "Bahasa Indonesia Tingkat Lanjut",
+    type: "pdf",
+    url: "https://drive.google.com/file/d/1RvZ7zPW8GtKL-1JquY78v1O3WdBKxp43/preview",
+  },
+  {
+    id: "puzzle-teks-berita",
+    title: "Puzzle Teks Berita",
+    type: "pdf",
+    url: "https://drive.google.com/file/d/1RT-LslNthgKt6v3rBAsPc1pa1KeRmz8L/preview",
+  },
+  {
+    id: "materi-berita",
+    title: "Materi Berita",
+    type: "pdf",
+    url: "https://drive.google.com/file/d/1mmUHw5j0BNCAisvfqebQUrEzr-spsodz/preview",
+  },
+  {
+    id: "puzzle-unsur-berita",
+    title: "Puzzle Unsur Berita",
+    type: "pdf",
+    url: "https://drive.google.com/file/d/1frxGOHX0yAmKHNGEwQ0Ol5Kr6Zy5ClGY/preview",
+  },
+] as const;
+
+const assignments = [
+  {
+    id: "analisis-video-lingkungan",
+    title: "Tugas 1: Analisis Video Aksi Lingkungan",
+    description: "Tonton video, lalu tulis gagasan utama dan satu aksi nyata untuk menjaga kebersihan sungai.",
+    format: "PDF atau dokumen",
   },
 ] as const;
 
@@ -62,40 +72,106 @@ const quickPrompts = [
   "Catat rangkuman ini",
 ];
 
-type Lesson = (typeof lessons)[number];
+type Material = (typeof materials)[number];
+type PracticeQuestion = {
+  id: string;
+  title: string;
+  prompt: string;
+  options: string[];
+};
+type PracticeResult = { is_correct: boolean; score: number };
 
-function createStudyReply(message: string, lesson: Lesson): string {
+function createStudyReply(message: string, material: Material): string {
   const normalized = message.toLocaleLowerCase("id-ID");
+  const materialType = material.type === "video" ? "video" : "dokumen PDF";
 
   if (normalized.includes("catat rangkuman")) {
-    return `Rangkuman ${lesson.title}:\n\n${lesson.summary.map((point) => `• ${point}`).join("\n")}`;
+    return `Materi terpilih: ${material.title} (${materialType}). Catat poin utama yang kamu temukan di materi ini.`;
   }
 
   if (normalized.includes("contoh nyata")) {
-    return `Contoh untuk ${lesson.title}: bayangkan kamu sedang menyusun langkah sederhana untuk mencapai satu tujuan. Mulai dari masukan yang tersedia, tentukan prosesnya, lalu periksa hasilnya. Bagian ini menghubungkan materi video dengan situasi sehari-hari.`;
+    return `Kita bisa menghubungkan ${material.title} dengan situasi sehari-hari. Ceritakan bagian yang kamu lihat atau baca, lalu kita cari contohnya bersama.`;
   }
 
   if (normalized.includes("belum paham")) {
-    return `Tidak apa-apa, kita uraikan pelan-pelan. Di materi “${lesson.title}”, bagian mana yang terasa membingungkan? Sebutkan istilah, gambar, atau langkah yang ingin kita bahas.`;
+    return `Tidak apa-apa, kita bahas pelan-pelan. Di ${material.title}, bagian mana yang terasa membingungkan? Sebutkan bagian yang ingin kita bahas.`;
   }
 
-  return `Mari bahas materi “${lesson.title}” langkah demi langkah. Bagian yang bisa jadi titik awal adalah: ${lesson.summary[0]} Apa yang ingin kamu tanyakan?`;
+  return `Mari bahas ${material.title} langkah demi langkah. Bagian mana yang ingin kamu tanyakan?`;
 }
 
 export default function RuangBelajarPage() {
-  const [activeLessonIndex, setActiveLessonIndex] = useState(0);
-  const [activeTab, setActiveTab] = useState<"summary" | "modules">("summary");
+  const [activeTab, setActiveTab] = useState<"materials" | "assignments">("materials");
+  const [activeMaterialId, setActiveMaterialId] = useState<Material["id"]>(materials[0].id);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [submittedFileName, setSubmittedFileName] = useState<string | null>(null);
+  const [practiceQuestions, setPracticeQuestions] = useState<PracticeQuestion[]>([]);
+  const [practiceSelections, setPracticeSelections] = useState<Record<string, number>>({});
+  const [practiceResults, setPracticeResults] = useState<Record<string, PracticeResult>>({});
+  const [practiceLoading, setPracticeLoading] = useState(true);
+  const [practiceError, setPracticeError] = useState<string | null>(null);
+  const [submittingQuestionId, setSubmittingQuestionId] = useState<string | null>(null);
+  const viewerRef = useRef<HTMLElement>(null);
   const [messages, setMessages] = useState<ConversationMessage[]>([
     {
       id: 1,
       role: "assistant",
-      text: "Assalamu'alaikum! Aku teman belajarmu. Tonton materi di sebelah, lalu ceritakan bagian yang ingin kamu bahas bersama.",
+      text: "Assalamu'alaikum! Aku teman belajarmu. Buka video atau dokumen, lalu ceritakan bagian yang ingin kamu bahas bersama.",
     },
   ]);
   const [isReplying, setIsReplying] = useState(false);
   const nextMessageId = useRef(2);
 
-  const activeLesson = lessons[activeLessonIndex];
+  const activeMaterial = materials.find(({ id }) => id === activeMaterialId) ?? materials[0];
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadPracticeQuestions() {
+      try {
+        const response = await fetch("/api/practice/questions", { cache: "no-store" });
+        const result = (await response.json()) as {
+          questions?: PracticeQuestion[];
+          error?: string;
+        };
+        if (!response.ok) throw new Error(result.error ?? "Soal latihan belum dapat dimuat.");
+        if (!cancelled) setPracticeQuestions(result.questions ?? []);
+      } catch (loadError) {
+        if (!cancelled) {
+          setPracticeError(loadError instanceof Error ? loadError.message : "Soal latihan belum dapat dimuat.");
+        }
+      } finally {
+        if (!cancelled) setPracticeLoading(false);
+      }
+    }
+
+    void loadPracticeQuestions();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  async function submitPracticeAnswer(questionId: string) {
+    const selectedOption = practiceSelections[questionId];
+    if (selectedOption === undefined || submittingQuestionId) return;
+
+    setSubmittingQuestionId(questionId);
+    setPracticeError(null);
+    try {
+      const response = await fetch("/api/practice/attempts", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ questionId, selectedOption }),
+      });
+      const result = (await response.json()) as PracticeResult & { error?: string };
+      if (!response.ok) throw new Error(result.error ?? "Jawaban belum dapat disimpan.");
+      setPracticeResults((current) => ({ ...current, [questionId]: result }));
+    } catch (submitError) {
+      setPracticeError(submitError instanceof Error ? submitError.message : "Jawaban belum dapat disimpan.");
+    } finally {
+      setSubmittingQuestionId(null);
+    }
+  }
 
   function sendQuestion(value: string) {
     const text = value.trim();
@@ -113,7 +189,7 @@ export default function RuangBelajarPage() {
       const reply: ConversationMessage = {
         id: nextMessageId.current++,
         role: "assistant",
-        text: createStudyReply(text, activeLesson),
+        text: createStudyReply(text, activeMaterial),
       };
       setMessages((current) => [...current, reply]);
       setIsReplying(false);
@@ -145,137 +221,230 @@ export default function RuangBelajarPage() {
 
       <div className="grid items-start gap-5 xl:grid-cols-[minmax(0,1.55fr)_minmax(330px,0.85fr)]">
         <main className="min-w-0 space-y-4">
-          <section className="overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-[0_4px_24px_-2px_rgba(13,148,136,0.04),0_2px_8px_-1px_rgba(15,23,42,0.03)]">
-            <div className="aspect-video w-full bg-slate-900">
-              <iframe
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                allowFullScreen
-                className="size-full"
-                loading="lazy"
-                referrerPolicy="strict-origin-when-cross-origin"
-                src={`https://www.youtube-nocookie.com/embed/${activeLesson.id}?rel=0`}
-                title={`Video pembelajaran: ${activeLesson.title}`}
-              />
-            </div>
-            <div className="p-5 sm:p-6">
-              <div className="flex flex-wrap items-start justify-between gap-3">
-                <div className="min-w-0">
-                  <p className="text-xs font-semibold uppercase text-teal-800">Materi pilihan</p>
-                  <h2 className="mt-1 text-lg font-bold text-slate-900 sm:text-xl">
-                    {activeLesson.title}
-                  </h2>
-                  <p className="mt-1 text-sm text-slate-500">Video edukatif · {activeLesson.creator}</p>
+          <div aria-label="Ruang kelas" className="flex border-b border-slate-200" role="tablist">
+            <button
+              aria-controls="materials-panel"
+              aria-selected={activeTab === "materials"}
+              className={`inline-flex min-h-12 items-center gap-2 border-b-2 px-4 text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-teal-500/20 ${activeTab === "materials" ? "border-teal-700 text-teal-900" : "border-transparent text-slate-500 hover:text-slate-800"}`}
+              id="materials-tab"
+              onClick={() => setActiveTab("materials")}
+              role="tab"
+              type="button"
+            >
+              <BookOpenText aria-hidden="true" size={17} />
+              Materi Belajar
+            </button>
+            <button
+              aria-controls="assignments-panel"
+              aria-selected={activeTab === "assignments"}
+              className={`inline-flex min-h-12 items-center gap-2 border-b-2 px-4 text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-teal-500/20 ${activeTab === "assignments" ? "border-teal-700 text-teal-900" : "border-transparent text-slate-500 hover:text-slate-800"}`}
+              id="assignments-tab"
+              onClick={() => setActiveTab("assignments")}
+              role="tab"
+              type="button"
+            >
+              <ClipboardList aria-hidden="true" size={17} />
+              Tugas &amp; Latihan
+            </button>
+          </div>
+
+          {activeTab === "materials" ? (
+            <section aria-labelledby="materials-tab" className="space-y-4" id="materials-panel" role="tabpanel">
+              <section
+                className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm"
+                id="material-viewer"
+                ref={viewerRef}
+              >
+                <div className={activeMaterial.type === "video" ? "aspect-video w-full bg-slate-900" : "h-[min(75vh,800px)] min-h-[520px] w-full bg-slate-100"}>
+                  <iframe
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    allowFullScreen
+                    className="size-full"
+                    key={activeMaterial.id}
+                    loading="lazy"
+                    referrerPolicy="strict-origin-when-cross-origin"
+                    src={activeMaterial.url}
+                    title={activeMaterial.title}
+                  />
                 </div>
-                <span className="inline-flex shrink-0 items-center gap-1.5 rounded-full bg-slate-100 px-3 py-1.5 text-xs font-semibold text-slate-700">
-                  <Clock3 aria-hidden="true" size={14} />
-                  {activeLesson.duration}
-                </span>
-              </div>
-              <div className="mt-4 flex flex-wrap gap-2">
-                <span className="rounded-full bg-teal-50 px-3 py-1.5 text-xs font-semibold text-teal-900">
-                  {activeLesson.topic}
-                </span>
-                <span className="rounded-full bg-amber-50 px-3 py-1.5 text-xs font-semibold text-amber-950">
-                  Belajar mandiri
-                </span>
-              </div>
-            </div>
-          </section>
-
-          <section className="overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-[0_4px_24px_-2px_rgba(13,148,136,0.04),0_2px_8px_-1px_rgba(15,23,42,0.03)]">
-            <div aria-label="Materi belajar" className="flex gap-2 border-b border-slate-100 p-3 sm:px-5" role="tablist">
-              <button
-                aria-controls="lesson-panel"
-                aria-selected={activeTab === "summary"}
-                className={`inline-flex min-h-10 items-center gap-2 rounded-xl px-3 text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-teal-500/20 ${
-                  activeTab === "summary"
-                    ? "bg-teal-800 text-white"
-                    : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
-                }`}
-                onClick={() => setActiveTab("summary")}
-                id="summary-tab"
-                role="tab"
-                type="button"
-              >
-                <NotebookText aria-hidden="true" size={17} />
-                Rangkuman Materi
-              </button>
-              <button
-                aria-controls="lesson-panel"
-                aria-selected={activeTab === "modules"}
-                className={`inline-flex min-h-10 items-center gap-2 rounded-xl px-3 text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-teal-500/20 ${
-                  activeTab === "modules"
-                    ? "bg-teal-800 text-white"
-                    : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
-                }`}
-                onClick={() => setActiveTab("modules")}
-                id="modules-tab"
-                role="tab"
-                type="button"
-              >
-                <ListVideo aria-hidden="true" size={17} />
-                Daftar Modul Belajar
-              </button>
-            </div>
-
-            <div aria-labelledby={`${activeTab}-tab`} aria-live="polite" className="p-5 sm:p-6" id="lesson-panel" role="tabpanel">
-              {activeTab === "summary" ? (
-                <div>
-                  <div className="flex items-center gap-2">
-                    <BookOpenText aria-hidden="true" className="text-teal-800" size={18} />
-                    <h3 className="text-sm font-bold text-slate-900">Poin penting materi</h3>
+                <div className="flex flex-wrap items-center justify-between gap-3 border-t border-slate-100 p-4 sm:p-5">
+                  <div className="min-w-0">
+                    <p className="text-xs font-semibold uppercase text-teal-800">
+                      {activeMaterial.type === "video" ? "Video pembelajaran" : "Dokumen PDF / Modul"}
+                    </p>
+                    <h2 className="mt-1 text-base font-bold text-slate-900">{activeMaterial.title}</h2>
                   </div>
-                  <ul className="mt-4 space-y-3">
-                    {activeLesson.summary.map((point, index) => (
-                      <li className="flex gap-3 text-sm leading-6 text-slate-700" key={point}>
-                        <span className="grid size-6 shrink-0 place-items-center rounded-lg bg-teal-50 text-xs font-bold text-teal-900">
-                          {index + 1}
+                  <a
+                    className="inline-flex min-h-10 items-center gap-2 rounded-lg border border-slate-200 px-3 text-sm font-semibold text-slate-700 transition-colors hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-teal-500/20"
+                    href={activeMaterial.url}
+                    rel="noreferrer"
+                    target="_blank"
+                  >
+                    <ExternalLink aria-hidden="true" size={16} />
+                    Buka di tab baru
+                  </a>
+                </div>
+              </section>
+
+              <section className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
+                <div className="mb-3 flex items-center justify-between gap-3">
+                  <div>
+                    <h2 className="text-sm font-bold text-slate-900">Materi kelas</h2>
+                    <p className="mt-1 text-xs text-slate-500">Pilih materi untuk membukanya di viewer.</p>
+                  </div>
+                  <span className="text-xs font-medium text-slate-500">{materials.length} item</span>
+                </div>
+                <div className="space-y-2">
+                  {materials.map((material) => {
+                    const active = material.id === activeMaterialId;
+                    const Icon = material.type === "video" ? Play : FileText;
+                    const typeLabel = material.type === "video" ? "Video YouTube" : "Dokumen PDF / Modul";
+
+                    return (
+                      <button
+                        aria-controls="material-viewer"
+                        aria-pressed={active}
+                        className={`flex min-h-[72px] w-full items-center gap-3 rounded-lg border p-3 text-left transition-colors focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-teal-500/20 ${active ? "border-teal-300 bg-teal-50/70" : "border-slate-200 hover:border-teal-200 hover:bg-slate-50"}`}
+                        key={material.id}
+                        onClick={() => {
+                          setActiveMaterialId(material.id);
+                          viewerRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+                        }}
+                        type="button"
+                      >
+                        <span className={`grid size-10 shrink-0 place-items-center rounded-lg ${active ? "bg-teal-800 text-white" : "bg-slate-100 text-slate-600"}`}>
+                          <Icon aria-hidden="true" fill={material.type === "video" ? "currentColor" : "none"} size={18} />
                         </span>
-                        <span>{point}</span>
-                      </li>
-                    ))}
-                  </ul>
+                        <span className="min-w-0 flex-1">
+                          <span className="block text-sm font-semibold text-slate-900">{material.title}</span>
+                          <span className="mt-1 block text-xs text-slate-500">{typeLabel}</span>
+                        </span>
+                        {active ? <Check aria-hidden="true" className="shrink-0 text-teal-800" size={17} /> : null}
+                      </button>
+                    );
+                  })}
                 </div>
-              ) : (
-                <div>
-                  <div className="mb-3 flex items-center justify-between gap-3">
-                    <div>
-                      <h3 className="text-sm font-bold text-slate-900">Playlist pembelajaran</h3>
-                      <p className="mt-1 text-xs text-slate-500">Pilih modul untuk mengganti video.</p>
+              </section>
+            </section>
+          ) : (
+            <section aria-labelledby="assignments-tab" className="space-y-4" id="assignments-panel" role="tabpanel">
+              {assignments.map((assignment) => (
+                <article className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5" key={assignment.id}>
+                  <div className="flex items-start gap-3">
+                    <span className="grid size-10 shrink-0 place-items-center rounded-lg bg-amber-50 text-amber-900">
+                      <ClipboardList aria-hidden="true" size={19} />
+                    </span>
+                    <div className="min-w-0 flex-1">
+                      <div className="flex flex-wrap items-center justify-between gap-2">
+                        <h2 className="text-sm font-bold text-slate-900">{assignment.title}</h2>
+                        <span className="rounded-full bg-amber-50 px-2.5 py-1 text-xs font-semibold text-amber-900">Belum dikumpulkan</span>
+                      </div>
+                      <p className="mt-2 text-sm leading-6 text-slate-600">{assignment.description}</p>
+                      <p className="mt-2 text-xs font-medium text-slate-500">Format: {assignment.format}</p>
                     </div>
-                    <span className="text-xs font-medium text-slate-500">{lessons.length} video</span>
                   </div>
-                  <div className="space-y-2">
-                    {lessons.map((lesson, index) => {
-                      const active = index === activeLessonIndex;
-                      return (
+
+                  <form
+                    className="mt-5 border-t border-slate-100 pt-4"
+                    onSubmit={(event) => {
+                      event.preventDefault();
+                      if (selectedFile) setSubmittedFileName(selectedFile.name);
+                    }}
+                  >
+                    <label className="mb-2 block text-sm font-semibold text-slate-800" htmlFor="assignment-upload">
+                      Lampirkan tugas
+                    </label>
+                    <input
+                      accept=".pdf,.doc,.docx,.ppt,.pptx,.jpg,.jpeg,.png"
+                      className="block w-full cursor-pointer rounded-lg border border-slate-200 bg-white text-sm text-slate-700 file:mr-3 file:min-h-10 file:border-0 file:bg-slate-100 file:px-4 file:font-semibold file:text-slate-700 hover:file:bg-slate-200 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-teal-500/20"
+                      id="assignment-upload"
+                      onChange={(event) => {
+                        setSelectedFile(event.target.files?.[0] ?? null);
+                        setSubmittedFileName(null);
+                      }}
+                      type="file"
+                    />
+                    <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
+                      <p className="min-w-0 text-xs text-slate-500" aria-live="polite">
+                        {submittedFileName
+                          ? `Tugas siap dikumpulkan: ${submittedFileName}`
+                          : selectedFile
+                            ? `File dipilih: ${selectedFile.name}`
+                            : "Pilih PDF, dokumen, presentasi, atau gambar."}
+                      </p>
+                      <button
+                        className="inline-flex min-h-10 items-center gap-2 rounded-lg bg-teal-800 px-4 text-sm font-semibold text-white transition-colors hover:bg-teal-900 disabled:cursor-not-allowed disabled:bg-slate-300 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-teal-500/30"
+                        disabled={!selectedFile}
+                        type="submit"
+                      >
+                        <Upload aria-hidden="true" size={16} />
+                        Kirim tugas
+                      </button>
+                    </div>
+                    <p className="mt-3 text-xs leading-5 text-slate-500">Demo ini hanya menyimpan pilihan file di halaman; file belum diunggah ke server.</p>
+                  </form>
+                </article>
+              ))}
+              <section className="space-y-3" aria-labelledby="practice-heading">
+                <div className="flex items-end justify-between gap-3">
+                  <div>
+                    <h2 className="text-base font-bold text-slate-900" id="practice-heading">Soal latihan</h2>
+                    <p className="mt-1 text-sm text-slate-500">Pilih jawaban, lalu kirim untuk menyimpan skor.</p>
+                  </div>
+                  {!practiceLoading ? <span className="text-xs text-slate-500">{practiceQuestions.length} soal</span> : null}
+                </div>
+                {practiceLoading ? <p className="rounded-lg border border-slate-200 bg-white p-4 text-sm text-slate-500">Memuat soal...</p> : null}
+                {practiceError ? <p className="rounded-lg bg-rose-50 p-3 text-sm text-rose-800" role="alert">{practiceError}</p> : null}
+                {!practiceLoading && !practiceError && practiceQuestions.length === 0 ? (
+                  <p className="rounded-lg border border-slate-200 bg-white p-4 text-sm text-slate-500">Belum ada soal latihan yang diterbitkan guru.</p>
+                ) : null}
+                {practiceQuestions.map((question) => {
+                  const result = practiceResults[question.id];
+                  return (
+                    <article className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5" key={question.id}>
+                      <h3 className="text-sm font-bold text-slate-900">{question.title}</h3>
+                      <p className="mt-2 text-sm leading-6 text-slate-700">{question.prompt}</p>
+                      <fieldset className="mt-4 space-y-2">
+                        <legend className="mb-2 text-xs font-semibold text-slate-500">Pilih satu jawaban</legend>
+                        {question.options.map((option, index) => (
+                          <label className="flex min-h-11 cursor-pointer items-center gap-3 rounded-lg border border-slate-200 px-3 text-sm text-slate-700 hover:bg-slate-50 has-[:checked]:border-teal-300 has-[:checked]:bg-teal-50" key={`${question.id}-${index}`}>
+                            <input
+                              checked={practiceSelections[question.id] === index}
+                              className="size-4 accent-teal-800"
+                              name={`answer-${question.id}`}
+                              onChange={() => {
+                                setPracticeSelections((current) => ({ ...current, [question.id]: index }));
+                                setPracticeResults((current) => {
+                                  const next = { ...current };
+                                  delete next[question.id];
+                                  return next;
+                                });
+                              }}
+                              type="radio"
+                            />
+                            <span>{option}</span>
+                          </label>
+                        ))}
+                      </fieldset>
+                      <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
+                        <p aria-live="polite" className={`text-sm font-medium ${result?.is_correct ? "text-emerald-800" : "text-slate-500"}`}>
+                          {result ? `${result.is_correct ? "Jawaban benar" : "Jawaban belum tepat"} · Skor ${result.score}` : ""}
+                        </p>
                         <button
-                          aria-current={active ? "true" : undefined}
-                          className={`flex min-h-[76px] w-full items-center gap-3 rounded-xl border p-3 text-left transition-colors focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-teal-500/20 ${
-                            active
-                              ? "border-teal-200 bg-teal-50/70"
-                              : "border-slate-100 bg-white hover:border-teal-200 hover:bg-slate-50"
-                          }`}
-                          key={lesson.id}
-                          onClick={() => setActiveLessonIndex(index)}
+                          className="min-h-10 rounded-lg bg-teal-800 px-4 text-sm font-semibold text-white hover:bg-teal-900 disabled:cursor-not-allowed disabled:opacity-50"
+                          disabled={practiceSelections[question.id] === undefined || submittingQuestionId !== null}
+                          onClick={() => void submitPracticeAnswer(question.id)}
                           type="button"
                         >
-                          <span className={`grid size-10 shrink-0 place-items-center rounded-xl ${active ? "bg-teal-800 text-white" : "bg-slate-100 text-slate-600"}`}>
-                            {active ? <Play aria-hidden="true" fill="currentColor" size={17} /> : <span className="text-xs font-bold">{String(index + 1).padStart(2, "0")}</span>}
-                          </span>
-                          <span className="min-w-0 flex-1">
-                            <span className="block text-sm font-semibold text-slate-900">{lesson.title}</span>
-                            <span className="mt-1 block text-xs text-slate-500">{lesson.topic} · {lesson.duration}</span>
-                          </span>
-                          {active ? <Check aria-hidden="true" className="shrink-0 text-teal-800" size={17} /> : null}
+                          {submittingQuestionId === question.id ? "Menyimpan..." : "Kirim jawaban"}
                         </button>
-                      );
-                    })}
-                  </div>
-                </div>
-              )}
-            </div>
-          </section>
+                      </div>
+                    </article>
+                  );
+                })}
+              </section>
+            </section>
+          )}
         </main>
 
         <aside className="min-w-0 space-y-4">

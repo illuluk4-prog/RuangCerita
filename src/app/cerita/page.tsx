@@ -12,6 +12,7 @@ import {
   ConversationPanel,
   type ConversationMessage,
 } from "@/components/conversation-panel";
+import { requestChatReply } from "@/lib/ai/chat-client";
 
 const openingTopics = [
   "Lagi capek hafalan/tugas",
@@ -22,28 +23,6 @@ const openingTopics = [
 
 const urgentConcernPattern =
   /bunuh diri|mengakhiri hidup|ingin mati|menyakiti diri|melukai diri|tidak ingin hidup|tidak aman|diancam|dilecehkan|disakiti/i;
-
-function createListenerReply(message: string): string {
-  const normalizedMessage = message.toLocaleLowerCase("id-ID");
-
-  if (urgentConcernPattern.test(normalizedMessage)) {
-    return "Terima kasih sudah berani menyampaikan ini. Kedengarannya kamu sedang menghadapi sesuatu yang berat, dan kamu tidak harus menghadapinya sendirian. Tolong temui guru, wali, pendamping asrama, atau orang dewasa yang kamu percaya sekarang. Jika ada bahaya langsung, cari tempat aman dan hubungi layanan darurat setempat. Ini demo lokal dan tidak mengirim notifikasi kepada siapa pun.";
-  }
-
-  if (/capek|lelah|hafalan|tugas|berat|penuh/.test(normalizedMessage)) {
-    return "Kedengarannya banyak hal sedang menumpuk dan menguras tenaga. Wajar kalau kamu merasa capek saat harus memikirkan semuanya. Dari semua yang ada, bagian mana yang paling terasa berat buatmu sekarang?";
-  }
-
-  if (/waktu|jadwal|bagi waktu|bingung/.test(normalizedMessage)) {
-    return "Rasanya bisa membingungkan saat banyak hal sama-sama terasa penting. Kita tidak perlu mencari solusi sekaligus. Hal apa yang paling mendesak di pikiranmu hari ini?";
-  }
-
-  if (/rindu|rumah|keluarga|kangen/.test(normalizedMessage)) {
-    return "Rindu rumah bisa terasa kuat, apalagi saat jauh dari keluarga. Terima kasih sudah cerita tentang itu. Apa hal kecil dari rumah yang paling kamu rindukan hari ini?";
-  }
-
-  return "Terima kasih sudah mau berbagi. Aku mendengarkan, tanpa menghakimi. Kamu boleh cerita pelan-pelan; bagian mana yang paling ingin kamu keluarkan dulu?";
-}
 
 export default function TemanCeritaPage() {
   const [messages, setMessages] = useState<ConversationMessage[]>([
@@ -56,7 +35,7 @@ export default function TemanCeritaPage() {
   const [isReplying, setIsReplying] = useState(false);
   const nextMessageId = useRef(2);
 
-  function sendStory(message: string) {
+  async function sendStory(message: string) {
     const userMessage: ConversationMessage = {
       id: nextMessageId.current++,
       role: "user",
@@ -64,18 +43,49 @@ export default function TemanCeritaPage() {
     };
 
     setMessages((current) => [...current, userMessage]);
+
+    if (urgentConcernPattern.test(message)) {
+      setMessages((current) => [
+        ...current,
+        {
+          id: nextMessageId.current++,
+          role: "assistant",
+          text: "Terima kasih sudah berani menyampaikan ini. Kamu tidak harus menghadapinya sendirian. Tolong temui guru, wali, pendamping asrama, atau orang dewasa yang kamu percaya sekarang. Jika ada bahaya langsung, cari tempat aman dan hubungi layanan darurat setempat.",
+        },
+      ]);
+      return;
+    }
+
     setIsReplying(true);
 
-    window.setTimeout(() => {
+    try {
+      const reply = await requestChatReply({
+        persona: "story",
+        message,
+        history: messages.slice(1).slice(-10).map(({ role, text }) => ({ role, text })),
+      });
       const assistantMessage: ConversationMessage = {
         id: nextMessageId.current++,
         role: "assistant",
-        text: createListenerReply(message),
+        text: reply,
       };
 
       setMessages((current) => [...current, assistantMessage]);
+    } catch (error) {
+      setMessages((current) => [
+        ...current,
+        {
+          id: nextMessageId.current++,
+          role: "assistant",
+          text:
+            error instanceof Error
+              ? error.message
+              : "Balasan AI belum berhasil dibuat. Coba lagi sebentar.",
+        },
+      ]);
+    } finally {
       setIsReplying(false);
-    }, 500);
+    }
   }
 
   return (
@@ -97,7 +107,7 @@ export default function TemanCeritaPage() {
         </div>
         <span className="inline-flex w-fit items-center gap-2 rounded-full border border-amber-200 bg-amber-50 px-3 py-2 text-xs font-semibold text-amber-900">
           <span className="size-2 rounded-full bg-amber-600" />
-          Demo · Tanpa login
+          Didukung Gemini · Tanpa login
         </span>
       </section>
 
@@ -105,7 +115,7 @@ export default function TemanCeritaPage() {
         <ConversationPanel
           assistantIcon={MessageCircleHeart}
           assistantLabel="Sahabat Pendengar"
-          helperText="Balasan dibuat lokal untuk demo; percakapan tidak dikirim ke server atau disimpan. Teman Cerita bukan layanan konseling."
+          helperText="Pesan dikirim ke Google Gemini untuk dibuat balasan dan tidak disimpan oleh aplikasi. Hindari membagikan data pribadi. Teman Cerita bukan layanan konseling."
           inputLabel="Tulis ceritamu"
           isReplying={isReplying}
           messages={messages}
@@ -113,9 +123,9 @@ export default function TemanCeritaPage() {
           placeholder="Tulis apa yang sedang kamu rasakan..."
           quickPromptLabel="Kalau belum tahu mulai dari mana"
           quickPrompts={openingTopics}
-          statusLabel="Mendengarkan"
+          statusLabel="Gemini AI"
           tone="story"
-          typingLabel="Menyiapkan balasan..."
+          typingLabel="Sedang merangkai balasan..."
         />
 
         <aside className="space-y-4">

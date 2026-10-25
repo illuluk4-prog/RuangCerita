@@ -20,6 +20,11 @@
 # production
 /build
 
+# local demo student records (private check-ins and practice attempts)
+/data/learning-records.json
+/data/learning-records.json.*
+/data/.local-session-secret
+
 # misc
 .DS_Store
 *.pem

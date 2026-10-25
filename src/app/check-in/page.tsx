@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import {
   ArrowLeft,
@@ -12,7 +12,6 @@ import {
   HeartHandshake,
   Lightbulb,
   LoaderCircle,
-  RotateCcw,
   Sparkles,
   X,
 } from "lucide-react";
@@ -55,10 +54,20 @@ type CheckinForm = {
 
 type SubmitResult = {
   checkin_id: string | null;
+  checkin_date: string;
+  day_of_week: string;
+  calendar: CheckinCalendar;
   analysis: AIAnalysis;
   analysis_source: "ai" | "demo_rules" | "safety_rule";
   routing: "sent" | "not_configured" | "failed" | "skipped_not_persisted";
-  persistence_status: "saved" | "partial" | "demo_only";
+  persistence_status: "saved" | "partial";
+};
+
+type CheckinCalendar = {
+  today: string;
+  hasCheckedInToday: boolean;
+  streak: number;
+  week: { date: string; day: string; checked: boolean; isToday: boolean }[];
 };
 
 const initialForm: CheckinForm = {
@@ -149,6 +158,30 @@ export default function CheckInPage() {
   const [result, setResult] = useState<SubmitResult | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [calendar, setCalendar] = useState<CheckinCalendar | null>(null);
+  const [isCalendarLoading, setIsCalendarLoading] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+    void fetch("/api/checkin", { cache: "no-store" })
+      .then(async (response) => {
+        if (!response.ok) throw new Error("Status kalender belum dapat dimuat.");
+        return (await response.json()) as { calendar: CheckinCalendar };
+      })
+      .then(({ calendar: currentCalendar }) => {
+        if (!cancelled) setCalendar(currentCalendar);
+      })
+      .catch(() => {
+        if (!cancelled) setCalendar(null);
+      })
+      .finally(() => {
+        if (!cancelled) setIsCalendarLoading(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   function updateMetric(key: "energy_level" | "focus_level" | "workload_level", value: number) {
     setForm((current) => ({ ...current, [key]: value }));
@@ -163,8 +196,7 @@ export default function CheckInPage() {
     }));
   }
 
-  async function submitCheckin(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
+  async function submitCheckin() {
     setError(null);
     setIsSubmitting(true);
 
@@ -174,13 +206,16 @@ export default function CheckInPage() {
         headers: { "content-type": "application/json" },
         body: JSON.stringify(form),
       });
-      const payload = (await response.json()) as SubmitResult | { error?: string };
+      const payload = (await response.json()) as SubmitResult | { error?: string; calendar?: CheckinCalendar };
 
       if (!response.ok) {
+        if ("calendar" in payload && payload.calendar) setCalendar(payload.calendar);
         throw new Error("error" in payload ? payload.error : "Check-in belum berhasil dikirim.");
       }
 
-      setResult(payload as SubmitResult);
+      const submittedResult = payload as SubmitResult;
+      setCalendar(submittedResult.calendar);
+      setResult(submittedResult);
     } catch (submitError) {
       setError(
         submitError instanceof Error
@@ -192,19 +227,57 @@ export default function CheckInPage() {
     }
   }
 
-  function resetCheckin() {
-    setForm(initialForm);
-    setStep(1);
-    setResult(null);
-    setError(null);
-  }
-
   const selectedAction = result ? actionContent[result.analysis.recommended_action] : null;
   const ActionIcon = selectedAction?.icon;
 
   return (
     <section aria-label="Daily Check-in" className="w-full text-slate-900">
       <div className="mx-auto w-full max-w-5xl">
+        {calendar ? (
+          <section aria-label="Kalender dan streak check-in" className="mb-6 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
+            <div className="flex flex-wrap items-center justify-between gap-4">
+              <div>
+                <p className="text-xs font-semibold uppercase text-teal-800">Presensi mingguan</p>
+                <p className="mt-1 text-sm font-semibold text-slate-900">
+                  {calendar.hasCheckedInToday ? "Sudah Check-in Hari Ini (Centang)" : "Check-in hari ini"}
+                </p>
+                <time className="mt-1 block text-xs text-slate-500" dateTime={calendar.today}>
+                  {new Date(`${calendar.today}T12:00:00`).toLocaleDateString("id-ID", {
+                    weekday: "long",
+                    day: "numeric",
+                    month: "long",
+                    year: "numeric",
+                  })}
+                </time>
+              </div>
+              <div className="rounded-xl bg-amber-50 px-4 py-2 text-right">
+                <p className="text-xs font-medium text-amber-900">Streak Check-in</p>
+                <p className="text-xl font-bold tabular-nums text-amber-950">{calendar.streak} hari</p>
+              </div>
+            </div>
+            <div className="mt-4 grid grid-cols-7 gap-2">
+              {calendar.week.map((day) => (
+                <div
+                  aria-label={`${day.day}, ${day.date}${day.checked ? ", sudah check-in" : ""}`}
+                  className={`flex min-h-16 flex-col items-center justify-center rounded-lg border px-1 py-2 text-center ${
+                    day.isToday
+                      ? "border-teal-700 bg-teal-50 text-teal-900"
+                      : day.checked
+                        ? "border-emerald-200 bg-emerald-50 text-emerald-900"
+                        : "border-slate-100 bg-slate-50 text-slate-500"
+                  }`}
+                  key={day.date}
+                >
+                  <span className="text-[10px] font-medium sm:text-xs">{day.day.slice(0, 3)}</span>
+                  <span className="mt-1 text-sm font-bold tabular-nums">{Number(day.date.slice(-2))}</span>
+                  {day.checked ? <Check aria-hidden="true" className="mt-0.5" size={13} /> : null}
+                </div>
+              ))}
+            </div>
+          </section>
+        ) : isCalendarLoading ? (
+          <div aria-busy="true" className="mb-6 h-28 animate-pulse rounded-2xl bg-slate-100" />
+        ) : null}
         <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_290px]">
           <section className="overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-[0_4px_24px_-2px_rgba(13,148,136,0.05),0_2px_8px_-1px_rgba(15,23,42,0.03)]">
             {result ? (
@@ -218,10 +291,8 @@ export default function CheckInPage() {
                     )}
                   </span>
                   <div>
-                    <p className="text-sm font-semibold text-teal-800">
-                      {result.persistence_status === "saved"
-                        ? "Check-in tersimpan"
-                        : "Hasil check-in siap"}
+                      <p className="text-sm font-semibold text-teal-800">
+                        {result.persistence_status === "saved" ? "Sudah Check-in Hari Ini (Centang)" : "Hasil check-in siap"}
                     </p>
                     <h1 className="mt-1 text-2xl font-bold text-slate-900 sm:text-3xl">
                       Terima kasih sudah berbagi.
@@ -232,11 +303,6 @@ export default function CheckInPage() {
                   </div>
                 </div>
 
-                {result.persistence_status === "demo_only" && (
-                  <div className="mb-5 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm leading-6 text-amber-950" role="status">
-                    Mode demo: hasil ini hanya untuk pengujian. Check-in tidak tersimpan di Supabase dan tidak ada notifikasi yang dikirim.
-                  </div>
-                )}
                 {result.analysis_source === "demo_rules" && (
                   <p className="mb-4 text-xs leading-5 text-slate-500">
                     Rekomendasi dibuat oleh aturan sederhana untuk pengujian, bukan oleh AI.
@@ -294,24 +360,21 @@ export default function CheckInPage() {
 
                 <div className="mt-6 flex flex-wrap items-center justify-between gap-3">
                   <p className="text-xs text-slate-500">
-                    {result.persistence_status === "demo_only"
-                      ? "Data tidak tersimpan dan otomatisasi tidak dijalankan."
-                      : result.persistence_status === "partial"
-                        ? "Check-in tersimpan, tetapi analisis belum tersimpan."
-                        : result.routing === "sent"
+                    {result.persistence_status === "partial"
+                      ? "Check-in tersimpan, tetapi analisis belum tersimpan."
+                      : result.routing === "sent"
                       ? "Tindak lanjut otomatis telah dijadwalkan."
                       : result.analysis.human_support_needed
                         ? "Pendampingan sedang menunggu konfigurasi tindak lanjut."
                         : "Data check-in tersimpan dengan aman."}
                   </p>
-                  <Button
-                    className="h-11 rounded-xl bg-teal-700 px-4 text-white hover:bg-teal-800"
-                    onClick={resetCheckin}
-                    type="button"
-                  >
-                    <RotateCcw aria-hidden="true" />
-                    Check-in lagi
-                  </Button>
+                  <time className="text-xs font-medium text-slate-600" dateTime={result.checkin_date}>
+                    {result.day_of_week}, {new Date(`${result.checkin_date}T12:00:00`).toLocaleDateString("id-ID", {
+                      day: "numeric",
+                      month: "long",
+                      year: "numeric",
+                    })}
+                  </time>
                 </div>
                 <Link
                   className="mt-5 flex min-h-20 items-center gap-4 rounded-2xl border border-amber-200 bg-amber-50/80 p-4 transition-colors hover:border-amber-300 hover:bg-amber-50 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-amber-500/20 sm:p-5"
@@ -330,6 +393,24 @@ export default function CheckInPage() {
                   </span>
                   <ArrowRight aria-hidden="true" className="shrink-0 text-amber-900" size={18} />
                 </Link>
+              </div>
+            ) : calendar?.hasCheckedInToday ? (
+              <div className="p-6 sm:p-8" role="status">
+                <span className="grid size-12 place-items-center rounded-2xl bg-emerald-50 text-emerald-800">
+                  <Check aria-hidden="true" size={24} />
+                </span>
+                <h1 className="mt-5 text-2xl font-bold text-slate-900">Sudah Check-in Hari Ini</h1>
+                <p className="mt-2 text-sm leading-6 text-slate-600">
+                  Check-in berikutnya tersedia besok. Streak-mu saat ini {calendar.streak} hari.
+                </p>
+                <time className="mt-3 block text-sm font-semibold text-teal-800" dateTime={calendar.today}>
+                  {new Date(`${calendar.today}T12:00:00`).toLocaleDateString("id-ID", {
+                    weekday: "long",
+                    day: "numeric",
+                    month: "long",
+                    year: "numeric",
+                  })}
+                </time>
               </div>
             ) : (
               <>
@@ -370,7 +451,7 @@ export default function CheckInPage() {
                   </div>
                 </div>
 
-                <form className="p-5 sm:p-8" onSubmit={submitCheckin}>
+                <div className="p-5 sm:p-8">
                   {step === 1 && (
                     <div className="space-y-8">
                       <fieldset>
@@ -572,7 +653,8 @@ export default function CheckInPage() {
                       <Button
                         className="h-11 rounded-xl bg-teal-700 px-5 text-white hover:bg-teal-800"
                         disabled={isSubmitting}
-                        type="submit"
+                        onClick={() => void submitCheckin()}
+                        type="button"
                       >
                         {isSubmitting ? (
                           <>
@@ -588,7 +670,7 @@ export default function CheckInPage() {
                       </Button>
                     )}
                   </div>
-                </form>
+                </div>
               </>
             )}
           </section>

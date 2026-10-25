@@ -1,6 +1,5 @@
 import { google } from "@ai-sdk/google";
 import { generateText, Output } from "ai";
-import { createClient as createSupabaseClient } from "@supabase/supabase-js";
 import { NextResponse } from "next/server";
 import {
   aiAnalysisSchema,
@@ -8,11 +7,25 @@ import {
   type AIAnalysis,
 } from "@/lib/ai/schemas";
 import { checkinSystemPrompt, createCheckinPrompt } from "@/lib/ai/prompts";
-import { createClient } from "@/lib/supabase/server";
+import { getAuthContext } from "@/lib/auth/session";
+import {
+  getStudentCheckinCalendar,
+  saveLocalCheckin,
+} from "@/lib/local-learning-store";
 
 export const runtime = "nodejs";
 
-const demoStudentId = "student_demo";
+export async function GET() {
+  const auth = await getAuthContext();
+  if (!auth) return NextResponse.json({ error: "Silakan masuk terlebih dahulu." }, { status: 401 });
+  if (auth.profile.role !== "siswa") {
+    return NextResponse.json({ error: "Kalender check-in hanya tersedia untuk siswa." }, { status: 403 });
+  }
+
+  const calendar = await getStudentCheckinCalendar(auth.profile.username);
+  return NextResponse.json({ calendar }, { headers: { "Cache-Control": "no-store" } });
+}
+
 const urgentSafetyPattern =
   /bunuh diri|mengakhiri hidup|ingin mati|menyakiti diri|melukai diri|tidak ingin hidup|suicide|kill myself|hurt myself|end my life/i;
 
@@ -88,33 +101,6 @@ function enforceSafetyRouting(analysis: AIAnalysis): AIAnalysis {
   };
 }
 
-async function routeAutomation(payload: {
-  checkin_id: string;
-  analysis_id: string;
-  student_id: string;
-  safety_flag: boolean;
-  priority: AIAnalysis["priority"];
-  human_support_needed: boolean;
-  recommended_action: AIAnalysis["recommended_action"];
-}): Promise<"sent" | "not_configured" | "failed"> {
-  const webhookUrl = process.env.N8N_CHECKIN_WEBHOOK_URL;
-  if (!webhookUrl) return "not_configured";
-
-  try {
-    const response = await fetch(webhookUrl, {
-      method: "POST",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify(payload),
-      signal: AbortSignal.timeout(5_000),
-      cache: "no-store",
-    });
-
-    return response.ok ? "sent" : "failed";
-  } catch {
-    return "failed";
-  }
-}
-
 export async function POST(request: Request) {
   if (Number(request.headers.get("content-length") ?? 0) > 16_000) {
     return NextResponse.json(
@@ -138,86 +124,26 @@ export async function POST(request: Request) {
     );
   }
 
-  const demoMode =
-    process.env.CHECKIN_DEMO_MODE === "true" && process.env.NODE_ENV !== "production";
+  const auth = await getAuthContext();
+  if (!auth) {
+    return NextResponse.json(
+      { error: "Silakan masuk ke akun siswa sebelum mengirim check-in." },
+      { status: 401 },
+    );
+  }
+  if (auth.profile.role !== "siswa") {
+    return NextResponse.json({ error: "Check-in hanya tersedia untuk siswa." }, { status: 403 });
+  }
 
-  let supabase: Awaited<ReturnType<typeof createClient>> | null = null;
-  let studentId = demoMode ? demoStudentId : "";
-  try {
-    if (demoMode) {
-      const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-      const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-
-      if (supabaseUrl && serviceRoleKey) {
-        supabase = createSupabaseClient(supabaseUrl, serviceRoleKey, {
-          auth: { autoRefreshToken: false, persistSession: false },
-        });
-      }
-    } else {
-      supabase = await createClient();
-
-      const { data: userData, error: authError } = await supabase.auth.getUser();
-      if (authError || !userData.user) {
-        return NextResponse.json(
-          { error: "Silakan masuk ke akun siswa sebelum mengirim check-in." },
-          { status: 401 },
-        );
-      }
-
-      studentId = userData.user.id;
-    }
-  } catch (error) {
-    if (!demoMode) {
-      return NextResponse.json(
-        { error: "Koneksi Supabase belum dikonfigurasi di server." },
-        { status: 503 },
-      );
-    }
-    console.warn(
-      "Demo check-in will use a non-persistent response",
-      error instanceof Error ? error.name : "unknown",
+  const currentCalendar = await getStudentCheckinCalendar(auth.profile.username);
+  if (currentCalendar.hasCheckedInToday) {
+    return NextResponse.json(
+      { error: "Kamu sudah check-in hari ini.", calendar: currentCalendar },
+      { status: 409 },
     );
   }
 
   const checkin = parsed.data;
-  let checkinId: string | null = null;
-  if (supabase) {
-    try {
-      const { data, error } = await supabase
-        .from("daily_checkins")
-        .insert({
-          student_id: studentId,
-          mood_score: checkin.mood_score,
-          energy_level: checkin.energy_level,
-          focus_level: checkin.focus_level,
-          workload_level: checkin.workload_level,
-          factors: checkin.factors,
-          desired_support: checkin.desired_support,
-          reflection_text: checkin.reflection_text || null,
-        })
-        .select("id")
-        .single();
-
-      if (error) {
-        console.warn("daily_checkins insert failed", error.code);
-      } else {
-        checkinId = data.id;
-      }
-    } catch (error) {
-      console.warn(
-        "daily_checkins request failed",
-        error instanceof Error ? error.name : "unknown",
-      );
-    }
-  }
-
-  if (!demoMode && !checkinId) {
-    return NextResponse.json(
-      { error: "Check-in belum dapat disimpan. Coba lagi sebentar." },
-      { status: 500 },
-    );
-  }
-
   let analysis: AIAnalysis;
   let analysisSource: "ai" | "demo_rules" | "safety_rule";
   if (urgentSafetyPattern.test(checkin.reflection_text)) {
@@ -241,79 +167,42 @@ export async function POST(request: Request) {
         "Check-in classification failed",
         error instanceof Error ? error.name : "unknown",
       );
-      if (!demoMode) {
-        return NextResponse.json(
-          {
-            error:
-              "Check-in tersimpan, tetapi saran belajar belum berhasil dibuat. Silakan coba lagi.",
-            checkin_id: checkinId,
-          },
-          { status: 502 },
-        );
-      }
       analysis = demoRulesAnalysis(checkin);
       analysisSource = "demo_rules";
     }
   }
 
-  let analysisId: string | null = null;
-  if (supabase && checkinId) {
-    try {
-      const { data, error } = await supabase
-        .from("ai_analyses")
-        .insert({
-          checkin_id: checkinId,
-          ...analysis,
-        })
-        .select("id")
-        .single();
+  const savedCheckin = await saveLocalCheckin({
+    username: auth.profile.username,
+    mood_score: checkin.mood_score,
+    energy_level: checkin.energy_level,
+    focus_level: checkin.focus_level,
+    workload_level: checkin.workload_level,
+    factors: checkin.factors,
+    desired_support: checkin.desired_support,
+    reflection_text: checkin.reflection_text || null,
+    analysis,
+    analysis_source: analysisSource,
+  });
 
-      if (error) {
-        console.warn("ai_analyses insert failed", error.code);
-      } else {
-        analysisId = data.id;
-      }
-    } catch (error) {
-      console.warn(
-        "ai_analyses request failed",
-        error instanceof Error ? error.name : "unknown",
-      );
-    }
-  }
-
-  if (!demoMode && checkinId && !analysisId) {
+  if (!savedCheckin.created) {
     return NextResponse.json(
       {
-        error:
-          "Check-in tersimpan, tetapi hasil analisis belum dapat disimpan.",
-        checkin_id: checkinId,
+        error: "Kamu sudah check-in hari ini.",
+        calendar: await getStudentCheckinCalendar(auth.profile.username),
       },
-      { status: 500 },
+      { status: 409 },
     );
   }
 
-  const routing =
-    checkinId && analysisId
-      ? await routeAutomation({
-          checkin_id: checkinId,
-          analysis_id: analysisId,
-          student_id: studentId,
-          safety_flag: analysis.safety_flag,
-          priority: analysis.priority,
-          human_support_needed: analysis.human_support_needed,
-          recommended_action: analysis.recommended_action,
-        })
-      : "skipped_not_persisted";
-
   return NextResponse.json({
-    checkin_id: checkinId,
+    checkin_id: savedCheckin.checkin.id,
+    checkin_date: savedCheckin.checkin.checkin_date,
+    day_of_week: savedCheckin.checkin.day_of_week,
+    calendar: await getStudentCheckinCalendar(auth.profile.username),
     analysis,
     analysis_source: analysisSource,
-    routing,
-    persistence_status: !checkinId
-      ? "demo_only"
-      : analysisId
-        ? "saved"
-        : "partial",
+    routing: "not_configured",
+    persistence_status: "saved",
   });
 }

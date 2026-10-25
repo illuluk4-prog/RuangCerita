@@ -1,4 +1,6 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
+import { getAuthContext } from "@/lib/auth/session";
 import {
   ArrowRight,
   ArrowUpRight,
@@ -13,7 +15,11 @@ import {
   Target,
 } from "lucide-react";
 
-export default function Home() {
+export default async function Home() {
+  const auth = await getAuthContext();
+  if (!auth) redirect("/login");
+  if (auth.profile.role === "guru") redirect("/dashboard-guru");
+
   return (
     <div className="space-y-8 pb-4">
       <section className="relative isolate overflow-hidden rounded-3xl bg-teal-900 px-5 py-7 text-white shadow-[0_12px_36px_-4px_rgba(15,23,42,0.12)] sm:px-8 sm:py-9">
