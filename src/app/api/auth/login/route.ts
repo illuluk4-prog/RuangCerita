@@ -16,9 +16,6 @@ const loginSchema = z.object({
 });
 
 export async function POST(request: Request) {
-  if (process.env.NODE_ENV === "production") {
-    return NextResponse.json({ error: "Akun preset hanya tersedia untuk development lokal." }, { status: 503 });
-  }
 
   let body: unknown;
   try {
