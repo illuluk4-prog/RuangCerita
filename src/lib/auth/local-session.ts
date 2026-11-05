@@ -1,9 +1,9 @@
 import { createHmac } from "node:crypto";
 import { cookies } from "next/headers";
-import { PresetRole } from "@/lib/studentsData";
+import type { PresetRole } from "@/lib/studentsData";
 
 export const localSessionCookie = "ruangcerita_preset_session";
-export const localSessionMaxAge = 60 * 60 * 24 * 7; // 7 hari
+export const localSessionMaxAge = 60 * 60 * 24 * 7;
 
 export type LocalSessionPayload = {
   username: string;
