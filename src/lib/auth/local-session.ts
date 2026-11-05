@@ -1,4 +1,4 @@
-import { createHmac } from "node:crypto";
+import { createHmac } from "crypto";
 import { cookies } from "next/headers";
 import type { PresetRole } from "@/lib/studentsData";
 
