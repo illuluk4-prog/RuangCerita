@@ -12,25 +12,35 @@ export type LocalSessionPayload = {
 };
 
 async function sessionSecret() {
-  if (process.env.LOCAL_SESSION_SECRET) return process.env.LOCAL_SESSION_SECRET;
-  return "ruangcerita-production-secret-2026";
+  return process.env.LOCAL_SESSION_SECRET || "ruangcerita-production-secret-2026";
 }
 
 function signature(payload: string, secret: string) {
   return createHmac("sha256", secret).update(payload).digest("base64url");
 }
 
-export async function createLocalSessionToken(payload: {
-  username: string;
-  role: PresetRole;
-}) {
+export async function createLocalSessionToken(
+  param1: string | { username: string; role: PresetRole },
+  param2?: PresetRole
+) {
   const secret = await sessionSecret();
   if (!secret) throw new Error("Preset account sessions are disabled in production.");
 
+  let username: string;
+  let role: PresetRole;
+
+  if (typeof param1 === "object" && param1 !== null) {
+    username = param1.username;
+    role = param1.role;
+  } else {
+    username = param1;
+    role = param2 || "siswa";
+  }
+
   const expiresAt = Date.now() + localSessionMaxAge * 1000;
   const tokenPayload: LocalSessionPayload = {
-    username: payload.username,
-    role: payload.role,
+    username,
+    role,
     expiresAt,
   };
 
