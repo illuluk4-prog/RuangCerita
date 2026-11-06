@@ -371,15 +371,17 @@ export default function TutorPage() {
                   </div>
 
                   <div className="mt-5 flex flex-wrap gap-2">
-                    <button
-                      className="inline-flex min-h-11 items-center gap-2 rounded-lg bg-teal-800 px-4 text-sm font-semibold text-white hover:bg-teal-900 disabled:cursor-not-allowed disabled:opacity-50"
-                      disabled={quizLevel === 3}
-                      onClick={() => startQuiz(selectedSubject, (quizLevel + 1) as QuizLevel)}
-                      type="button"
-                    >
-                      <Target aria-hidden="true" size={16} />
-                      {quizLevel === 3 ? "Level Maksimal" : "Lanjut ke Level Berikutnya (Lebih Sulit)"}
-                    </button>
+                    {selectedSubject ? (
+                      <button
+                        className="inline-flex min-h-11 items-center gap-2 rounded-lg bg-teal-800 px-4 text-sm font-semibold text-white hover:bg-teal-900 disabled:cursor-not-allowed disabled:opacity-50"
+                        disabled={quizLevel === 3}
+                        onClick={() => startQuiz(selectedSubject, (quizLevel + 1) as QuizLevel)}
+                        type="button"
+                      >
+                        <Target aria-hidden="true" size={16} />
+                        {quizLevel === 3 ? "Level Maksimal" : "Lanjut ke Level Berikutnya (Lebih Sulit)"}
+                      </button>
+                    ) : null}
                     <button className="inline-flex min-h-11 items-center gap-2 rounded-lg border border-slate-300 bg-white px-4 text-sm font-semibold text-slate-700 hover:bg-slate-50" onClick={chooseAnotherSubject} type="button">
                       Ganti Mata Pelajaran
                     </button>

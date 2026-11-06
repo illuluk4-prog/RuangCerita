@@ -10,6 +10,23 @@ create table if not exists public.profiles (
 create unique index if not exists profiles_username_ci_unique
   on public.profiles (lower(username));
 
+create or replace function public.get_auth_email_by_username(p_username text)
+returns text
+language sql
+stable
+security definer
+set search_path = public, auth, pg_temp
+as $$
+  select auth_user.email
+  from auth.users as auth_user
+  join public.profiles as profile on profile.id = auth_user.id
+  where lower(profile.username) = lower(trim(p_username))
+  limit 1
+$$;
+
+revoke all on function public.get_auth_email_by_username(text) from public, anon, authenticated;
+grant execute on function public.get_auth_email_by_username(text) to service_role;
+
 create or replace function public.handle_new_auth_user()
 returns trigger
 language plpgsql
