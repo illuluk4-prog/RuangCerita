@@ -67,8 +67,7 @@ export async function verifyLocalSessionToken(token: string | undefined): Promis
   const [payload, suppliedSignature, extra] = token.split(".");
   if (!payload || !suppliedSignature || extra) return null;
 
-  const expectedSignature = signature(payload, secret);
-  const expected = Buffer.from(expectedSignature);
+  const expected = Buffer.from(signature(payload, secret));
   const supplied = Buffer.from(suppliedSignature);
   if (expected.length !== supplied.length || !timingSafeEqual(expected, supplied)) return null;
 
